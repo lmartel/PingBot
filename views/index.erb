@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>PingBot</title>
+</head>
+<body >
+<h1 style="text-align:center;">The PingBot is active.</h1>
+    <ul style="list-style-type:none; margin-left:20%;">
+    <% @apps.each do |app| %>
+        <li><%= diagnose app %></li>
+    <% end %>
+    </ul>
+</body>
+</html>
