@@ -12,15 +12,9 @@ APPS = [
     'http://pingbot.lpm.io'
 ]
 
-class NilClass
-    def to_s
-        "NEVER" # Probably don't do this in a real app
-    end
-end
-
 class PingBot < Sinatra::Base
     configure do
-        DB = Sequel.connect(ENV['HEROKU_POSTGRESQL_YELLOW_URL'] || ENV['DATABASE_URL'] || raise('No DB found'))
+        DB = Sequel.connect(ENV['HEROKU_POSTGRESQL_YELLOW_URL'] || ENV['DATABASE_URL'] || "raise('No DB found')")
         DB.create_table? :apps do
             primary_key :id
             String :url, null: false
@@ -37,12 +31,21 @@ class PingBot < Sinatra::Base
     end
 
     helpers do
+        def pretty_url(url)
+            "<a href='#{url}'><em>#{url}</em></a>"
+        end
+
+        def pretty_timestamp(datetime)
+            return "never" if datetime.nil?
+            '<strong>' + datetime.strftime("%a, %m/%d/%Y at %H:%m:%S %P") + '</strong>'
+        end
+
         def diagnose(app)
             if app[:last_success].nil? && app[:last_ping].nil?
-                "#{app[:url]} might not be set up correctly. It has never been pinged."
+                "#{pretty_url app[:url]} might not be set up correctly. It has never been pinged."
             else
-                return "#{app[:url]} is UP! Successfully pinged at #{app[:last_success]}." if app[:last_success] == app[:last_ping]
-                "#{app[:url]} might be down. Last attempted ping: #{app[:last_ping]}. Last success: #{app[:last_success]}."
+                return "#{pretty_url app[:url]} is <strong>UP!</strong> Successfully pinged on #{pretty_timestamp app[:last_success]}." if app[:last_success] == app[:last_ping]
+                "#{pretty_url app[:url]} might be <strong>down.</strong> Last attempted ping: #{pretty_timestamp app[:last_ping]}. Last success: #{pretty_timestamp app[:last_success]}."
             end
         end
     end
