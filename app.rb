@@ -1,6 +1,7 @@
 require 'rubygems'
 require 'sinatra/base'
 require 'sequel'
+require 'pg'
 
 APPS = [
     'http://game.lpm.io',
