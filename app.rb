@@ -1,9 +1,9 @@
 require 'rubygems'
 require 'sinatra/base'
 require 'sequel'
-require 'pg'
+Bundler.require(ENV['RACK_ENV'])
 
-APPS = [
+SEEDS = [
     'http://game.lpm.io',
     'http://auth.lpm.io',
     'http://s.lpm.io',
@@ -24,7 +24,7 @@ class PingBot < Sinatra::Base
 
         App = DB[:apps]
         if App.count == 0
-            APPS.each do |app|
+            SEEDS.each do |app|
                 App.insert url: app
             end
         end
@@ -35,9 +35,16 @@ class PingBot < Sinatra::Base
             "<a href='#{url}'><em>#{url}</em></a>"
         end
 
-        def pretty_timestamp(datetime)
-            return "never" if datetime.nil?
-            '<strong>' + datetime.strftime("%a, %m/%d/%Y at %H:%m:%S %P") + '</strong>'
+        def pacific(time)
+            datetime = DateTime.parse(time.to_s)
+            datetime.new_offset(-8.0/24)
+            datetime.new_offset(-7.0/24) if datetime.to_time.dst?
+            Time.parse(datetime.to_s)
+        end
+
+        def pretty_timestamp(time)
+            return "never" if time.nil?
+            '<strong>' + pacific(time).strftime("%a, %m/%d/%Y at %l:%m %P") + '</strong>'
         end
 
         def diagnose(app)

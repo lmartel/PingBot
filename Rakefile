@@ -9,6 +9,12 @@ task :ping_all do
     App.each do |app|
         uri = URI.parse app[:url]
         response = Net::HTTP.get_response uri
+
+        # Follow redirects
+        while response.kind_of? Net::HTTPRedirection
+            response = Net::HTTP.get_response(URI.parse response.header['location'])
+        end
+
         now = DateTime.now
         App.where(id: app[:id]).update last_ping: now
         if response.kind_of? Net::HTTPSuccess
