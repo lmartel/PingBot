@@ -36,10 +36,14 @@ class PingBot < Sinatra::Base
         end
 
         def pacific(time)
-            datetime = DateTime.parse(time.to_s)
+            datetime = DateTime.now
             datetime.new_offset(-8.0/24)
-            datetime.new_offset(-7.0/24) if datetime.to_time.dst?
-            Time.parse(datetime.to_s)
+            if datetime.to_time.dst?
+                offset = "-07:00"
+            else
+                offset = "-08:00"
+            end
+            Time.new(time.year, time.month, time.day, time.hour, time.min, time.sec, offset)
         end
 
         def pretty_timestamp(time)
