@@ -1,6 +1,7 @@
 require 'rubygems'
 require 'sinatra/base'
 require 'sequel'
+require 'tzinfo'
 Bundler.require(ENV['RACK_ENV'])
 
 SEEDS = [
@@ -36,18 +37,7 @@ class PingBot < Sinatra::Base
         end
 
         def pacific(time)
-            if ["PST", "PDT"].include? time.zone
-                time
-            else
-                datetime = DateTime.now
-                datetime.new_offset(-8.0/24)
-                if datetime.to_time.dst?
-                    offset = -7
-                else
-                    offset = -8
-                end
-                Time.new(time.year, time.month, time.day, time.hour + offset, time.min, time.sec, 0)
-            end
+            TZInfo::Timezone.get("America/Los_Angeles").utc_to_local(Time.now.utc)
         end
 
         def pretty_timestamp(time)
