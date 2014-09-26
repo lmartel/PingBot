@@ -25,6 +25,6 @@ end
 
 namespace :db do
     task :reset do
-        App.each { |a| a.destroy }
+        App.delete
     end
 end
