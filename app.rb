@@ -9,7 +9,7 @@ SEEDS = [
     'http://auth.lpm.io',
     'http://s.lpm.io',
     'http://tv.lpm.io',
-    'http://stanfordharmonics.com',
+    'http://harmz-old.lpm.io',
     'http://gazebo.lpm.io',
     'http://pingbot.lpm.io'
 ]
